@@ -1,6 +1,7 @@
 const express=require('express')
 const cors=require('cors')
 const path = require('path');
+const bcrypt=require('bcrypt')
 
 
 const ArticleInfo=require('./src/model/blogDB')
@@ -22,15 +23,24 @@ app.get('/*', function(req, res) {
 app.post('/api/login',(req,res)=>{
     res.header("Access-Control-Allow-Origin: *");
     try {
-        var user={
-            username:req.body.username,
-            email:req.body.email,
-            password:req.body.password
-        }
-        console.log(user)
-        const usernew=new UserInfo(user);
-        usernew.save();
-        res.status(200).json("User registered")
+        UserInfo.find({email:req.body.email},(data)=>{
+            if(data.length==0){
+                var user={
+                    username:req.body.username,
+                    email:req.body.email,
+                    password:bcrypt.hashSync(req.body.password,10)
+                }
+                console.log(user)
+                const usernew=new UserInfo(user);
+                usernew.save();
+                res.status(200).json("User registered")
+            }else{
+                res.json("Email ID already exists")
+
+            }
+
+        })
+        
     
         
         
