@@ -21,14 +21,23 @@ app.get('/*', function(req, res) {
 
 app.post('/api/login',(req,res)=>{
     res.header("Access-Control-Allow-Origin: *");
-    var user={
-        username:req.body.username,
-        email:req.body.email,
-        password:req.body.password
+    try {
+        var user={
+            username:req.body.username,
+            email:req.body.email,
+            password:req.body.password
+        }
+        console.log(user)
+        const usernew=new UserInfo(user);
+        usernew.save();
+        res.status(200).json("User registered")
+    
+        
+        
+    } catch (error) {
+        res.status(500).json({error})
     }
-    const usernew=new UserInfo(user);
-    usernew.save();
-    res.redirect('/home')
+    
     
 
 })
@@ -38,36 +47,23 @@ app.post('/api/home',(req,res)=>{
     res.header("Access-Control-Allow-Origin: *");
   let useremail=req.body.email;
   let userpass=req.body.password;
-      //console.log(req.body)
-      UserInfo.find({"email":req.body.email})
+      console.log(req.body)
+      UserInfo.find({"email":useremail},
+        {"password":userpass})
       .then(function(user){
           console.log(user)
           if(user.length>0){
-              var dataemail=Object.values(user)[0].email
-              var datapass=Object.values(user)[0].password
-              if(useremail==dataemail&&userpass==datapass){
-                  return res.json('authentication success').redirect('/home')
-              }else{
-                return res.json('authentication failed')
-              }
-
-
+              res.json("authentication success")
           }else{
-              return res.json("Invalid email and password")
+              res.json("authentication failed")
           }
-          
-      })
- 
-
-    
+     })
 
 })
 
 
-
-
 app.get('/api/article/:name',(req,res)=>{
-    
+    res.header("Access-Control-Allow-Origin: *");
     try {
         const articleName=req.params.name;
         
@@ -82,7 +78,7 @@ app.get('/api/article/:name',(req,res)=>{
 })
 //Upvotes Routing
 app.post('/api/article/:name/upvote',(req,res)=>{
-
+    res.header("Access-Control-Allow-Origin: *");
     const articleName=req.params.name
     const filter = { name: articleName };
     const update = { $inc: { upvotes: 1 } };
@@ -94,7 +90,7 @@ app.post('/api/article/:name/upvote',(req,res)=>{
 
 //CommentsRouting
 app.post('/api/article/:name/comments',(req,res)=>{
-    
+    res.header("Access-Control-Allow-Origin: *");
     const articleName=req.params.name;
     const { username, text } = req.body;
     const filter = { name: articleName };
