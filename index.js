@@ -23,7 +23,7 @@ app.get('/*', function(req, res) {
 app.post('/api/login',(req,res)=>{
     res.header("Access-Control-Allow-Origin: *");
     try {
-        UserInfo.find({email:req.body.email},(data)=>{
+        UserInfo.find({email:req.body.email},(err,data)=>{
             if(data.length==0){
                 var user={
                     username:req.body.username,
