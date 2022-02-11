@@ -106,6 +106,6 @@ app.post('/api/article/:name/comments',(req,res)=>{
         })
 })
 
-const PORT=process.env.PORT || 5000
+const port=process.env.PORT|| 5000
 
-app.listen(PORT,()=>console.log('Server on 5000'))
+app.listen(port,()=>console.log('Server on 5000'))
