@@ -1,0 +1,32 @@
+GET http://localhost:5000
+Content-type:application/json
+
+###postapi
+POST http://localhost:5000
+Content-type:application/json
+
+{"username":"Vimmy"}
+
+###
+
+POST http://localhost:5000/article/node/upvote
+Content-type:application/json
+
+
+###
+POST http://localhost:5000/article/react/upvote
+Content-type:application/json
+###
+POST http://localhost:5000/article/node/comments
+Content-type:application/json
+
+{"username":"Vimmy",
+"text":"Thank you"}
+
+###
+POST http://localhost:5000/article/react/comments
+Content-type:application/json
+
+{"username":"Vimmy",
+"text":"Wonderful"}
+
