@@ -1,7 +1,8 @@
 const express=require('express')
 const cors=require('cors')
 const path = require('path');
-const bcrypt=require('bcrypt')
+const bcrypt=require('bcrypt');
+const jwt=require('jsonwebtoken')
 
 
 const ArticleInfo=require('./src/model/blogDB')
@@ -20,7 +21,7 @@ app.get('/*', function(req, res) {
     res.sendFile(path.join(__dirname +'/build/index.html'));
     });
 
-app.post('/api/login',(req,res)=>{
+app.post('/api/signup',(req,res)=>{
     res.header("Access-Control-Allow-Origin: *");
     try {
         UserInfo.find({email:req.body.email},(err,data)=>{
@@ -30,7 +31,7 @@ app.post('/api/login',(req,res)=>{
                     email:req.body.email,
                     password:bcrypt.hashSync(req.body.password,10)
                 }
-                console.log(user)
+                //console.log(user)
                 const usernew=new UserInfo(user);
                 usernew.save();
                 res.status(200).json("User registered")
@@ -53,17 +54,30 @@ app.post('/api/login',(req,res)=>{
 })
 
 
-app.post('/api/home',(req,res)=>{
+app.post('/api/login',(req,res)=>{
     res.header("Access-Control-Allow-Origin: *");
   let useremail=req.body.email;
   let userpass=req.body.password;
-      console.log(req.body)
+      //console.log(req.body)
       UserInfo.find({"email":useremail},(err,data)=>{
           if(data.length>0){
               const passwordValidator=bcrypt.compareSync(userpass,data[0].password)
               //console.log(passwordValidator)
                 if(passwordValidator){
-                  res.json("authentication success")
+
+                    //token generation
+                    jwt.sign({email:data[0].email,id:data[0]._id},
+                        'secrettoken',
+                        {expiresIn:'1d'},
+                        (err,token)=>{
+                            if(err){
+                                res.json("Error in token generation")
+                            }else{
+                                //console.log(token)
+                                res.json("Authentication success")
+                            }
+                        })
+                  
               }else{
                   res.json("Invalid password")
               }
@@ -89,7 +103,7 @@ app.get('/api/article/:name',(req,res)=>{
     }
     
 })
-//Upvotes Routing
+//Upvotes Routing 
 app.post('/api/article/:name/upvote',(req,res)=>{
     res.header("Access-Control-Allow-Origin: *");
     const articleName=req.params.name
