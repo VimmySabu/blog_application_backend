@@ -58,17 +58,20 @@ app.post('/api/home',(req,res)=>{
   let useremail=req.body.email;
   let userpass=req.body.password;
       console.log(req.body)
-      UserInfo.find({"email":useremail},
-        {"password":userpass})
-      .then(function(user){
-          console.log(user)
-          if(user.length>0){
-              res.json("authentication success")
+      UserInfo.find({"email":useremail},(err,data)=>{
+          if(data.length>0){
+              const passwordValidator=bcrypt.compareSync(userpass,data[0].password)
+              //console.log(passwordValidator)
+                if(passwordValidator){
+                  res.json("authentication success")
+              }else{
+                  res.json("Invalid password")
+              }
           }else{
-              res.json("authentication failed")
+              res.json("User does not exist")
           }
-     })
-
+      })
+      
 })
 
 
